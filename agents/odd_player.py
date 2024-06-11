@@ -68,19 +68,19 @@ class OddPlayer(
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
                 action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
-        elif win_rate >= 0.4:
-            # check
-            if valid_actions[1]["amount"] <= 60:
-                action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
-            else:
-                action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
-        elif win_rate >= 0.2:
-            if valid_actions[2]["amount"]["min"] <= 20 and valid_actions[2]["amount"]["max"] > 0:
-                action, amount = valid_actions[2]["action"], 20
-            elif valid_actions[1]["amount"] <= 30:
-                action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
-            else:
-                action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
+        # elif win_rate >= 0.4:
+        #     # check
+        #     if valid_actions[1]["amount"] <= 60:
+        #         action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
+        #     else:
+        #         action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
+        # elif win_rate >= 0.2:
+        #     if valid_actions[2]["amount"]["min"] <= 20 and valid_actions[2]["amount"]["max"] > 0:
+        #         action, amount = valid_actions[2]["action"], 20
+        #     elif valid_actions[1]["amount"] <= 30:
+        #         action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
+        #     else:
+        #         action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
         else:
             # fold or check
             if valid_actions[1]["amount"] == 0:
