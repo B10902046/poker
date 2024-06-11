@@ -56,8 +56,12 @@ class OddPlayer(
         #---------------
         
         secret_key = 0.75
+        secret_key2 = 0.5
+
         if len(round_state["community_card"]) == 0:
             secret_key = 0.6
+            secret_key2 = 0.4
+
         if win_rate >= secret_key:
             # allin
             if (valid_actions[2]["amount"]["min"] > 20):
@@ -74,7 +78,7 @@ class OddPlayer(
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
                 action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
-        elif win_rate >= 0.5:
+        elif win_rate >= secret_key2:
             # check
             if valid_actions[1]["amount"] <= 50:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
