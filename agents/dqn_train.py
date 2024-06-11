@@ -31,7 +31,7 @@ class TrainPlayer(BasePokerPlayer):
         self.learning_freq = 1
         self.target_update_freq = 100
         self.learning_start_step = 20
-        self.checkpoint_period = 1000
+        self.checkpoint_period = 10000
         self.batch_size = 128
         self.gamma = 0.95
         self.epsilon = 1.0  # Initial exploration rate

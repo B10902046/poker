@@ -7,6 +7,8 @@ import random
 import torch.nn as nn
 import torch.optim as optim
 import torch
+from src.compute_odd import *
+from agents.odd_player import *
 
 class DQNPlayer(
     BasePokerPlayer
@@ -21,12 +23,33 @@ class DQNPlayer(
     #  we define the logic to make an action through this method. (so this method would be the core of your AI)
     def declare_action(self, valid_actions, hole_card, round_state):
         state_feature = round_state_to_features(valid_actions, hole_card, round_state, self.game_info)
+        
+        hole_card_id = convert_hole_cards_to_ids(hole_card)
+        hand1 = Hand.new()
+        hand1 = hand1.add_card(hole_card_id[0])
+        hand1 = hand1.add_card(hole_card_id[1])
+        hand2 = Hand.new()
+        board = Hand.new()
+        for i in range(len(round_state["community_card"])):
+            community_card = card_to_id(round_state["community_card"][i])
+            board = board.add_card(community_card)
+            hand1.cards += (community_card,)
+            hand2.cards += (community_card,)
+            hand1.mask += CARDS[community_card][1]
+            hand2.mask += CARDS[community_card][1]
+            hand1.key += CARDS[community_card][0]
+            hand2.key += CARDS[community_card][0]
+        a,b,c = heads_up_win_frequency(hand1, hand2, board)
+        win_rate = a / (a+b+c)
+        #----debug--------
+        print(f"win_rate: {win_rate}")
+        #---------------
         # select the action
         try:
             all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
 
             # Log the constructed actions for debugging
-            print(f"All actions: {all_actions}")
+            #print(f"All actions: {all_actions}")
 
             valid_action_id = [0]
             if (valid_actions[1]["amount"]) <= 50:
@@ -47,7 +70,7 @@ class DQNPlayer(
             output = self.DQN(torch.Tensor(state_feature))
 
             # Log the output tensor values for debugging
-            print(f"Output tensor values: {output}")
+            #print(f"Output tensor values: {output}")
             # Create a subset of the tensor
             subset = output[valid_action_id]
             # Find the index of the maximum value within the subset
@@ -55,7 +78,7 @@ class DQNPlayer(
             # Map back to the original index
             action_id = valid_action_id[max_subset_index]
 
-            print(f"action_id: {action_id}")
+            #print(f"action_id: {action_id}")
 
             if (action_id == 0):
                 amount = 0
