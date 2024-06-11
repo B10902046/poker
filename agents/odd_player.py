@@ -54,11 +54,17 @@ class OddPlayer(
         #----debug--------
         print(f"win_rate: {win_rate}")
         #---------------
-        if win_rate >= 0.75:
+        
+        secret_key = 0.75
+        if len(round_state["community_card"]) == 0:
+            secret_key = 0.6
+        if win_rate >= secret_key:
             # allin
-            call_action_info = valid_actions[2]
-            action, amount = call_action_info["action"], call_action_info["amount"]["max"]
-            if amount < 0:
+            if (valid_actions[2]["amount"]["min"] > 20):
+                action, amount = valid_actions[2]["action"], valid_actions[2]["amount"]["max"]
+            elif valid_actions[2]["amount"]["min"] > 0:
+                action, amount = valid_actions[2]["action"], 20
+            else:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
         elif win_rate >= 0.6:
             # raise 2BB or call 10BB
@@ -68,12 +74,12 @@ class OddPlayer(
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
                 action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
-        # elif win_rate >= 0.4:
-        #     # check
-        #     if valid_actions[1]["amount"] <= 60:
-        #         action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
-        #     else:
-        #         action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
+        elif win_rate >= 0.5:
+            # check
+            if valid_actions[1]["amount"] <= 50:
+                action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
+            else:
+                action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
         # elif win_rate >= 0.2:
         #     if valid_actions[2]["amount"]["min"] <= 20 and valid_actions[2]["amount"]["max"] > 0:
         #         action, amount = valid_actions[2]["action"], 20
