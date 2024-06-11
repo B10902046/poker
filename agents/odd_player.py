@@ -55,33 +55,32 @@ class OddPlayer(
         print(win_rate)
         #---------------
         if win_rate >= 0.8:
-            # Bet
+            # allin
             call_action_info = valid_actions[2]
-            action, amount = call_action_info["action"], min(call_action_info["amount"]["min"] + 50, call_action_info["amount"]["max"])
+            action, amount = call_action_info["action"], call_action_info["amount"]["max"]
             if amount < 0:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
         elif win_rate >= 0.6:
-            # Bet or check
-            if valid_actions[1]["amount"] <= 100:
+            # raise 2BB or call 10BB
+            if valid_actions[2]["amount"] <= 20 and valid_actions[2]["amount"] > 0:
+                action, amount = valid_actions[2]["action"], 20
+            elif valid_actions[1]["amount"] <= 100:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
-                action, amount = valid_actions[2]["action"], valid_actions[2]["amount"]["min"]
-                if amount < 0:
-                    action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
+                action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
         elif win_rate >= 0.4:
             # check
-            if valid_actions[1]["amount"] <= 50:
+            if valid_actions[1]["amount"] <= 60:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
                 action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
         elif win_rate >= 0.2:
-            if valid_actions[1]["amount"] == 0:
+            if valid_actions[2]["amount"] <= 20 and valid_actions[2]["amount"] > 0:
+                action, amount = valid_actions[2]["action"], 20
+            elif valid_actions[1]["amount"] <= 30:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
-                if valid_actions[2]["amount"]["min"] > 150:
-                    action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
-                else:
-                    action, amount = valid_actions[2]["action"], valid_actions[2]["amount"]["min"]
+                action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
         else:
             # fold or check
             if valid_actions[1]["amount"] == 0:
