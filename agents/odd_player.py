@@ -92,17 +92,17 @@ class OddPlayer(
         return action, amount  # action returned here is sent to the poker engine
         
     def receive_game_start_message(self, game_info):
-        pass
-
-    def receive_round_start_message(self, round_count, hole_card, seats):
-        self.win_line=1000 + 15 * ((20 - round_count) //2) + 10 * ((20 - round_count) % 2)
-
-    def receive_street_start_message(self, street, round_state):
         if game_info["seats"][0]["name"]=='me':
             self.index=0
         else:
             self.index=1
         self.win=False
+
+    def receive_round_start_message(self, round_count, hole_card, seats):
+        self.win_line=1000 + 15 * ((20 - round_count) //2) + 10 * ((20 - round_count) % 2)
+
+    def receive_street_start_message(self, street, round_state):
+        pass
 
     def receive_game_update_message(self, action, round_state):
         pass
