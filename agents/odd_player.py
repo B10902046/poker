@@ -52,9 +52,9 @@ class OddPlayer(
         a,b,c = heads_up_win_frequency(hand1, hand2, board)
         win_rate = a / (a+b+c)
         #----debug--------
-        print(win_rate)
+        print(f"win_rate: {win_rate}")
         #---------------
-        if win_rate >= 0.8:
+        if win_rate >= 0.75:
             # allin
             call_action_info = valid_actions[2]
             action, amount = call_action_info["action"], call_action_info["amount"]["max"]
@@ -62,7 +62,7 @@ class OddPlayer(
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
         elif win_rate >= 0.6:
             # raise 2BB or call 10BB
-            if valid_actions[2]["amount"] <= 20 and valid_actions[2]["amount"] > 0:
+            if valid_actions[2]["amount"]["min"] <= 20 and valid_actions[2]["amount"]["max"] > 0:
                 action, amount = valid_actions[2]["action"], 20
             elif valid_actions[1]["amount"] <= 100:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
@@ -75,7 +75,7 @@ class OddPlayer(
             else:
                 action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
         elif win_rate >= 0.2:
-            if valid_actions[2]["amount"] <= 20 and valid_actions[2]["amount"] > 0:
+            if valid_actions[2]["amount"]["min"] <= 20 and valid_actions[2]["amount"]["max"] > 0:
                 action, amount = valid_actions[2]["action"], 20
             elif valid_actions[1]["amount"] <= 30:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
@@ -87,7 +87,9 @@ class OddPlayer(
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
                 action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
-               
+        
+        print(f"action: {action}")
+        print(f"amount: {amount}")
         return action, amount  # action returned here is sent to the poker engine
         
     def receive_game_start_message(self, game_info):
