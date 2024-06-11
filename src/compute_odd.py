@@ -268,17 +268,16 @@ def heads_up_win_frequency(hand1, hand2, board):
     alive_cards = compute_alive_cards(hand1.mask | hand2.mask | board.mask)
     assert len(alive_cards) >= 5 - len(board.cards)    
     
-    match (len(hand2.cards) - len(board.cards), len(board.cards)):
-        case (0, 0):
-            return heads_up_win_freq_0_0(hand1) 
-        case (0, 3):
-            return heads_up_win_freq_0(hand1, hand2, alive_cards, heads_up_win_freq_2_3)
-        case (0, 4):
-            return heads_up_win_freq_0(hand1, hand2, alive_cards, heads_up_win_freq_2_4)
-        case (0, 5):
-            return heads_up_win_freq_0(hand1, hand2, alive_cards, heads_up_win_freq_2_5)
-        case _:
-            raise ValueError("Unreachable case")
+    if len(board.cards) == 0:
+        return heads_up_win_freq_0_0(hand1) 
+    elif len(board.cards) == 3:
+        return heads_up_win_freq_0(hand1, hand2, alive_cards, heads_up_win_freq_2_3)
+    elif len(board.cards) == 4:
+        return heads_up_win_freq_0(hand1, hand2, alive_cards, heads_up_win_freq_2_4)
+    elif len(board.cards) == 5:
+        return heads_up_win_freq_0(hand1, hand2, alive_cards, heads_up_win_freq_2_5)
+    else:
+        raise ValueError("Unreachable case")
 
 HEADS_UP_WIN_FREQUENCY = (
     (1035889822, 1021877238, 39805340),

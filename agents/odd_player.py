@@ -58,15 +58,19 @@ class OddPlayer(
             # Bet
             call_action_info = valid_actions[2]
             action, amount = call_action_info["action"], min(call_action_info["amount"]["min"] + 50, call_action_info["amount"]["max"])
+            if amount < 0:
+                action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
         elif win_rate >= 0.6:
             # Bet or check
-            if valid_actions[1]["amount"] == 0:
+            if valid_actions[1]["amount"] <= 100:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
                 action, amount = valid_actions[2]["action"], valid_actions[2]["amount"]["min"]
+                if amount < 0:
+                    action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
         elif win_rate >= 0.4:
             # check
-            if valid_actions[1]["amount"] <= 100:
+            if valid_actions[1]["amount"] <= 50:
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
                 action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
@@ -94,7 +98,11 @@ class OddPlayer(
         self.win_line=1000 + 15 * ((20 - round_count) //2) + 10 * ((20 - round_count) % 2)
 
     def receive_street_start_message(self, street, round_state):
-        pass
+        if game_info["seats"][0]["name"]=='me':
+            self.index=0
+        else:
+            self.index=1
+        self.win=False
 
     def receive_game_update_message(self, action, round_state):
         pass
