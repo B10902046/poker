@@ -15,7 +15,7 @@ def init_weights(m):
         m.bias.data.fill_(0.01)
 
 class TrainPlayer(BasePokerPlayer):
-    def __init__(self, num_actions=7):
+    def __init__(self, num_actions=8):
         self.DQN = DQN(num_actions=num_actions)
         self.target_DQN = DQN(num_actions=num_actions)
         self.DQN.apply(init_weights)
@@ -23,20 +23,20 @@ class TrainPlayer(BasePokerPlayer):
         for p in self.target_DQN.parameters():
             p.requires_grad = False
 
-        self.replay_buffer = deque(maxlen=10000)  # Fixed-size replay buffer
-        self.optimizer = optim.Adam(self.DQN.parameters())
+        self.replay_buffer = deque(maxlen=100000)  # Fixed-size replay buffer
+        self.optimizer = optim.Adam(self.DQN.parameters(), lr=1e-4)
         self.criterion = nn.MSELoss()
         self.num_actions = num_actions
         self.step = 0
         self.learning_freq = 1
-        self.target_update_freq = 8
+        self.target_update_freq = 100
         self.learning_start_step = 20
-        self.checkpoint_period = 100
-        self.batch_size = 16
-        self.gamma = 0.99
+        self.checkpoint_period = 1000
+        self.batch_size = 128
+        self.gamma = 0.95
         self.epsilon = 1.0  # Initial exploration rate
         self.epsilon_decay = 0.995  # Epsilon decay rate
-        self.min_epsilon = 0.1  # Minimum epsilon value
+        self.min_epsilon = 0.2  # Minimum epsilon value
 
     def select_epsilon_greedy_action(self, state_feature):
         if random.random() > self.epsilon:
@@ -59,20 +59,48 @@ class TrainPlayer(BasePokerPlayer):
         self.last_stack = stack
         
         try:
-            raise_action_info = valid_actions[2]
-            call_action_info = valid_actions[1]
-            fold_action_info = valid_actions[0]
-            all_actions = [[fold_action_info["action"], fold_action_info["amount"]], [call_action_info["action"], call_action_info["amount"]]]
-            max_raise_amount = raise_action_info["amount"]["max"]
-            min_raise_amount = raise_action_info["amount"]["min"]
-            for i in range(self.num_actions - 2):
-                all_actions.append([raise_action_info["action"], min_raise_amount + (max_raise_amount - min_raise_amount) * i / 4])
+            all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
+            
+            valid_action_id = [0, 7]
+            if (valid_actions[1]["amount"]) <= 50:
+                valid_action_id.append(1)
+            elif (valid_actions[1]["amount"]) <= 100:
+                valid_action_id.append(2)
+            else:
+                valid_action_id.append(3)
+            if (valid_actions[2]["amount"]["min"] > 0):
+                if (valid_actions[2]["amount"]["min"] <= 80):
+                    valid_action_id.append(6)
+                if (valid_actions[2]["amount"]["min"] <= 40):
+                    valid_action_id.append(5)
+                if (valid_actions[2]["amount"]["min"] <= 20):
+                    valid_action_id.append(4)
             
             if self.step < self.learning_start_step:
-                action_id = random.randrange(self.num_actions)
+                action_id = random.choice(valid_action_id)
             else:
-                action_id = self.select_epsilon_greedy_action(state_feature)
+                if random.random() > self.epsilon:
+                    output = self.DQN(torch.Tensor(state_feature))
+                    # Create a subset of the tensor
+                    subset = output[valid_action_id]
+                    # Find the index of the maximum value within the subset
+                    max_subset_index = torch.argmax(subset).item()
+                    # Map back to the original index
+                    action_id = valid_action_id[max_subset_index]
+                else:
+                    action_id = random.choice(valid_action_id)
+            
             self.last_action = action_id
+            self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)  # Decay epsilon
+
+            if (action_id == 0):
+                amount = 0
+            elif (action_id <= 3):
+                amount = valid_actions[1]["amount"]
+            else:
+                amount = all_actions[action_id][1]
+            action = all_actions[action_id][0]
+
         except Exception as e:
             print(f"error in action selection: {e}")
 
@@ -100,8 +128,6 @@ class TrainPlayer(BasePokerPlayer):
             print(f"error in training process at step {self.step}: {e}")
 
         self.step += 1
-        self.epsilon = max(self.min_epsilon, self.epsilon * self.epsilon_decay)  # Decay epsilon
-        action, amount = all_actions[action_id][0], all_actions[action_id][1]
         return action, amount
 
     def receive_game_start_message(self, game_info):

@@ -1,6 +1,29 @@
 from game.engine.card import Card
 from game.engine.hand_evaluator import HandEvaluator
+from compute_odd import *
 import random
+
+def card_to_id(card):
+    """
+    Convert a card string (e.g., 'CA' for Ace of Clubs) to a unique ID from 0 to 51.
+    """
+    rank_map = {'2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8': 6, '9': 7, 'T': 8, 'J': 9, 'Q': 10, 'K': 11, 'A': 12}
+    suit_map = {'C': 0, 'D': 1, 'H': 2, 'S': 3}
+    
+    rank = card[1]
+    suit = card[0]
+    
+    rank_id = rank_map[rank]
+    suit_id = suit_map[suit]
+    
+    card_id = suit_id + rank_id * 4
+    return card_id
+
+def convert_hole_cards_to_ids(hole_cards):
+    """
+    Convert a list of hole cards to their respective IDs.
+    """
+    return [card_to_id(card) for card in hole_cards]
 
 def round_state_to_features(valid_actions, hole_card, round_state, game_info):
     try:
@@ -22,36 +45,25 @@ def round_state_to_features(valid_actions, hole_card, round_state, game_info):
         print("error in block 1")
     
     try:
-        hole_card = [Card.from_str(card_str) for card_str in hole_card]
-        hole_card_ids = [card.to_id() for card in hole_card]
-        community_card = [Card.from_str(card_str) for card_str in round_state['community_card']]
-        community_card_ids = [card.to_id() for card in community_card]
-        unseen_card_ids = [card_id for card_id in range(1,53) if card_id not in community_card_ids + hole_card_ids]
-        win_count = 0
-        for _ in range(50):
-            # fill community cards
-            num_remain_com_card = 5 - len(community_card_ids)
-            filled_community_card_ids = community_card_ids + random.sample(unseen_card_ids, num_remain_com_card)
-            filled_community_card = [Card.from_id(card_id) for card_id in filled_community_card_ids]
-            # print(community_card_ids, filled_community_card_ids)
+        hole_card_id = convert_hole_cards_to_ids(hole_card)
+        hand1 = Hand.new()
+        hand1 = hand1.add_card(hole_card_id[0])
+        hand1 = hand1.add_card(hole_card_id[1])
+        hand2 = Hand.new()
+        board = Hand.new()
+        for i in range(len(round_state["community_card"])):
+            community_card = card_to_id(round_state["community_card"][i])
+            board = board.add_card(community_card)
+            hand1.cards += (community_card,)
+            hand2.cards += (community_card,)
+            hand1.mask += CARDS[community_card][1]
+            hand2.mask += CARDS[community_card][1]
+            hand1.key += CARDS[community_card][0]
+            hand2.key += CARDS[community_card][0]
+        a,b,c = heads_up_win_frequency(hand1, hand2, board)
+        win_rate = a / (a+b+c)
 
-            # guess the hole cards of our oponents
-            nb_players = len(round_state['seats'])
-            unseen_card_ids = [card_id for card_id in range(1,53) if card_id not in filled_community_card_ids + hole_card_ids]
-            other_hole_card_ids = random.sample(unseen_card_ids, 2*(nb_players-1))
-            other_hole_card = [Card.from_id(card_id) for card_id in other_hole_card_ids]
-            oponents_hole_card = [other_hole_card[(2*i):(2*i+2)] for i in range(nb_players-1)]
-            # print(hole_card_ids, other_hole_card_ids)
-
-            # evaluate the rank of our oponents and ourselves
-            oponents_score = [HandEvaluator.eval_hand(hole, filled_community_card) for hole in oponents_hole_card]
-            my_score = HandEvaluator.eval_hand(hole_card, filled_community_card)
-            # print(my_score, oponents_score)
-            if my_score > max(oponents_score):
-                win_count += 1
-        card_score = win_count / 50
-
-        features = [street, main_pot, stack, card_score]
+        features = [street, main_pot, stack, win_rate]
         return features
     except:
         print("error in block 2")

@@ -1,9 +1,9 @@
 import torch.nn as nn
 import torch.nn.functional as F
 #in_features: 
-#num_actions: fold call(0~3) call(3~6) call(6~9) call(9~12) call(12~allin) raise(3) raise(6) raise(9) raise(12) raise(15)
+#num_actions: fold call(0~5) call(5~10) call(10~allin) raise(2) raise(4) raise(8) allin
 class DQN(nn.Module):
-    def __init__(self, in_features=4, num_actions=7):
+    def __init__(self, in_features=4, num_actions=8):
         super(DQN, self).__init__()
         self.fc1 = nn.Linear(in_features, 128)
         self.fc2 = nn.Linear(128, 256)
