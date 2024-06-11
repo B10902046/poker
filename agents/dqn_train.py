@@ -61,7 +61,7 @@ class TrainPlayer(BasePokerPlayer):
         try:
             all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
             
-            valid_action_id = [0, 7]
+            valid_action_id = [0]
             if (valid_actions[1]["amount"]) <= 50:
                 valid_action_id.append(1)
             elif (valid_actions[1]["amount"]) <= 100:
@@ -69,6 +69,7 @@ class TrainPlayer(BasePokerPlayer):
             else:
                 valid_action_id.append(3)
             if (valid_actions[2]["amount"]["min"] > 0):
+                valid_action_id.append(7)
                 if (valid_actions[2]["amount"]["min"] <= 80):
                     valid_action_id.append(6)
                 if (valid_actions[2]["amount"]["min"] <= 40):

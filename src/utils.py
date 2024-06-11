@@ -1,6 +1,6 @@
 from game.engine.card import Card
 from game.engine.hand_evaluator import HandEvaluator
-from compute_odd import *
+from src.compute_odd import *
 import random
 
 def card_to_id(card):
