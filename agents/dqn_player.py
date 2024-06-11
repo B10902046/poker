@@ -12,9 +12,9 @@ class DQNPlayer(
     BasePokerPlayer
 ):  # Do not forget to make parent class as "BasePokerPlayer"
     
-    def __init__(self, num_actions = 7):
+    def __init__(self, num_actions = 8):
         self.DQN = DQN(num_actions=num_actions)
-        self.DQN.load_state_dict(torch.load("src/model_7700.pth"))
+        self.DQN.load_state_dict(torch.load("src/model/model_9000.pth"))
         self.DQN.eval()
         self.num_actions = num_actions
 
@@ -23,32 +23,48 @@ class DQNPlayer(
         state_feature = round_state_to_features(valid_actions, hole_card, round_state, self.game_info)
         # select the action
         try:
-            raise_action_info = valid_actions[2]
-            call_action_info = valid_actions[1]
-            fold_action_info = valid_actions[0]
+            all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
 
-            # Log the valid actions for debugging
-            print(f"Valid actions: {valid_actions}")
-
-            all_actions = [[fold_action_info["action"],fold_action_info["amount"]],[call_action_info["action"],call_action_info["amount"]]]
-            max_raise_amount = raise_action_info["amount"]["max"]
-            min_raise_amount = raise_action_info["amount"]["min"]
-            for i in range(self.num_actions-2):
-                all_actions.append([raise_action_info["action"], min_raise_amount+(max_raise_amount-min_raise_amount)*i/4])
-            
             # Log the constructed actions for debugging
             print(f"All actions: {all_actions}")
+
+            valid_action_id = [0]
+            if (valid_actions[1]["amount"]) <= 50:
+                valid_action_id.append(1)
+            elif (valid_actions[1]["amount"]) <= 100:
+                valid_action_id.append(2)
+            else:
+                valid_action_id.append(3)
+            if (valid_actions[2]["amount"]["min"] > 0):
+                valid_action_id.append(7)
+                if (valid_actions[2]["amount"]["min"] <= 80):
+                    valid_action_id.append(6)
+                if (valid_actions[2]["amount"]["min"] <= 40):
+                    valid_action_id.append(5)
+                if (valid_actions[2]["amount"]["min"] <= 20):
+                    valid_action_id.append(4)
 
             output = self.DQN(torch.Tensor(state_feature))
 
             # Log the output tensor values for debugging
             print(f"Output tensor values: {output}")
-
-            action_id = int(torch.argmax(output).cpu())
+            # Create a subset of the tensor
+            subset = output[valid_action_id]
+            # Find the index of the maximum value within the subset
+            max_subset_index = torch.argmax(subset).item()
+            # Map back to the original index
+            action_id = valid_action_id[max_subset_index]
 
             print(f"action_id: {action_id}")
 
-            action, amount = all_actions[action_id][0], all_actions[action_id][1]
+            if (action_id == 0):
+                amount = 0
+            elif (action_id <= 3):
+                amount = valid_actions[1]["amount"]
+            else:
+                amount = all_actions[action_id][1]
+            action = all_actions[action_id][0]
+
             return action, amount  # action returned here is sent to the poker engine
         except:
             print("error in action selection")
