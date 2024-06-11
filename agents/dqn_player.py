@@ -39,17 +39,20 @@ class DQNPlayer(
             # Log the constructed actions for debugging
             print(f"All actions: {all_actions}")
 
-            output = self.DQN(state_feature)
+            output = self.DQN(torch.Tensor(state_feature))
 
             # Log the output tensor values for debugging
             print(f"Output tensor values: {output}")
-            
+
             action_id = int(torch.argmax(output).cpu())
+
+            print(f"action_id: {action_id}")
+
+            action, amount = all_actions[action_id][0], all_actions[action_id][1]
+            return action, amount  # action returned here is sent to the poker engine
         except:
             print("error in action selection")
-        action, amount = all_actions[action_id][0], all_actions[action_id][1]
-        return action, amount  # action returned here is sent to the poker engine
-
+        
     def receive_game_start_message(self, game_info):
         self.game_info = game_info
         self.total_stack = game_info["player_num"]*game_info["rule"]["initial_stack"]
