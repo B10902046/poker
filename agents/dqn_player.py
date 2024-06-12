@@ -16,7 +16,7 @@ class DQNPlayer(
     
     def __init__(self, num_actions = 8):
         self.DQN = DQN(num_actions=num_actions)
-        self.DQN.load_state_dict(torch.load("src/model/model_9000.pth"))
+        self.DQN.load_state_dict(torch.load("src/model/model_40000.pth"))
         self.DQN.eval()
         self.num_actions = num_actions
 
@@ -24,27 +24,7 @@ class DQNPlayer(
     def declare_action(self, valid_actions, hole_card, round_state):
         state_feature = round_state_to_features(valid_actions, hole_card, round_state, self.game_info)
         
-        hole_card_id = convert_hole_cards_to_ids(hole_card)
-        hand1 = Hand.new()
-        hand1 = hand1.add_card(hole_card_id[0])
-        hand1 = hand1.add_card(hole_card_id[1])
-        hand2 = Hand.new()
-        board = Hand.new()
-        for i in range(len(round_state["community_card"])):
-            community_card = card_to_id(round_state["community_card"][i])
-            board = board.add_card(community_card)
-            hand1.cards += (community_card,)
-            hand2.cards += (community_card,)
-            hand1.mask += CARDS[community_card][1]
-            hand2.mask += CARDS[community_card][1]
-            hand1.key += CARDS[community_card][0]
-            hand2.key += CARDS[community_card][0]
-        a,b,c = heads_up_win_frequency(hand1, hand2, board)
-        win_rate = a / (a+b+c)
-        #----debug--------
-        print(f"win_rate: {win_rate}")
-        #---------------
-        # select the action
+        
         try:
             all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
 
