@@ -80,7 +80,7 @@ class DQNPlayer(
 
             #print(f"action_id: {action_id}")
 
-            if (action_id == 0):
+            if (action_id == 0 and valid_actions[1]["amount"] > 0):
                 amount = 0
             elif (action_id <= 3):
                 amount = valid_actions[1]["amount"]
