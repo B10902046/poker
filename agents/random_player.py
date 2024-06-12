@@ -34,7 +34,7 @@ class RandomPlayer(BasePokerPlayer):
         self.round_stack = 0
 
     def receive_round_start_message(self, round_count, hole_card, seats):
-        print(f"round start. round_count = {self.round_count}")
+        print(f"round start. round_count = {round_count}")
         self.round_stack = [s['stack'] for s in seats if s['uuid'] == self.uuid][0]
 
 
