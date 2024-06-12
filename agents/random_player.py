@@ -31,10 +31,12 @@ class RandomPlayer(BasePokerPlayer):
             return valid_actions[2]
 
     def receive_game_start_message(self, game_info):
-        pass
+        self.round_stack = 0
 
     def receive_round_start_message(self, round_count, hole_card, seats):
-        pass
+        print(f"round start. round_count = {self.round_count}")
+        self.round_stack = [s['stack'] for s in seats if s['uuid'] == self.uuid][0]
+
 
     def receive_street_start_message(self, street, round_state):
         pass
@@ -43,7 +45,8 @@ class RandomPlayer(BasePokerPlayer):
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
-        pass
+        reward = [s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid][0] - self.round_stack
+        print(f"round end. reward = {reward}")
 
 
 def setup_ai():

@@ -23,15 +23,16 @@ class TrainPlayer(BasePokerPlayer):
         for p in self.target_DQN.parameters():
             p.requires_grad = False
 
-        self.replay_buffer = deque(maxlen=100000)  # Fixed-size replay buffer
+        self.replay_buffer = deque()  # Fixed-size 5000 replay buffer popleft()
+        self.buffer_size = 5000
         self.optimizer = optim.Adam(self.DQN.parameters(), lr=1e-4)
         self.criterion = nn.MSELoss()
         self.num_actions = num_actions
         self.step = 0
         self.learning_freq = 1
         self.target_update_freq = 100
-        self.learning_start_step = 20
-        self.checkpoint_period = 10000
+        self.learning_start_step = 1000
+        self.checkpoint_period = 1000
         self.batch_size = 128
         self.gamma = 0.95
         self.epsilon = 1.0  # Initial exploration rate
@@ -46,17 +47,15 @@ class TrainPlayer(BasePokerPlayer):
             return random.randrange(self.num_actions)
 
     def declare_action(self, valid_actions, hole_card, round_state):
-        state_feature = round_state_to_features(valid_actions, hole_card, round_state, self.game_info)
-        stack = valid_actions[2]["amount"]["max"]
-        if stack < 0:
-            stack = 0
-        reward = (stack - self.last_stack) / self.total_stack
+        state_feature = round_state_to_features(hole_card, round_state, self.game_info)
+        state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid])
+        state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] != self.uuid])
         if self.last_state is not None:
-            self.replay_buffer.append((self.last_state, self.last_action, reward, state_feature))
+            # self.replay_buffer.append((self.last_state, self.last_action, reward, state_feature))
+            self.cache.append((self.last_state, self.last_action, state_feature))
             print("add a record to the replay buffer: ", end="")
-            print((self.last_state, self.last_action, reward, state_feature))
+            # print((self.last_state, self.last_action, reward, state_feature))
         self.last_state = state_feature
-        self.last_stack = stack
         
         try:
             all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
@@ -133,13 +132,16 @@ class TrainPlayer(BasePokerPlayer):
 
     def receive_game_start_message(self, game_info):
         self.game_info = game_info
-        self.total_stack = game_info["player_num"] * game_info["rule"]["initial_stack"]
+        #self.total_stack = game_info["player_num"] * game_info["rule"]["initial_stack"]
         self.last_state = None
         self.last_action = None
-        self.last_stack = game_info['rule']['initial_stack']
+        # self.last_stack = game_info['rule']['initial_stack']
+
+        self.round_stack = 0
 
     def receive_round_start_message(self, round_count, hole_card, seats):
-        pass
+        self.round_stack = [s['stack'] for s in seats if s['uuid'] == self.uuid][0]
+        self.cache = []
 
     def receive_street_start_message(self, street, round_state):
         pass
@@ -148,7 +150,13 @@ class TrainPlayer(BasePokerPlayer):
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
-        pass
+        reward = [s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid][0] - self.round_stack
+        for C in self.cache:
+            self.replay_buffer.append((C[0], C[1], reward, C[2]))
+            if self.step > self.buffer_size:
+                self.replay_buffer.popleft()
+
+        
 
 def setup_ai():
     return TrainPlayer()

@@ -25,22 +25,20 @@ def convert_hole_cards_to_ids(hole_cards):
     """
     return [card_to_id(card) for card in hole_cards]
 
-def round_state_to_features(valid_actions, hole_card, round_state, game_info):
+def round_state_to_features(hole_card, round_state, game_info):
     try:
-        total_stack = game_info["player_num"]*game_info["rule"]["initial_stack"]
-        main_pot = round_state['pot']['main']['amount']/total_stack
-        stack = valid_actions[2]['amount']['max']/total_stack
-        if stack < 0:
-            stack = 0
+        
+        main_pot = round_state['pot']['main']['amount']
+        
         street = -1
         if round_state['street'] == "preflop":
-            street = 0.25
+            street = 0
         elif round_state['street'] == "flop":
-            street = 0.5
+            street = 1
         elif round_state['street'] == "turn":
-            street = 0.75
+            street = 2
         else:
-            street = 1.0
+            street = 3
     except:
         print("error in block 1")
     
@@ -63,7 +61,7 @@ def round_state_to_features(valid_actions, hole_card, round_state, game_info):
         a,b,c = heads_up_win_frequency(hand1, hand2, board)
         win_rate = a / (a+b+c)
 
-        features = [street, main_pot, stack, win_rate]
+        features = [street, main_pot, win_rate]
         return features
     except:
         print("error in block 2")
