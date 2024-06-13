@@ -34,5 +34,5 @@ for i, player in enumerate(players):
         if game_result["players"][0]["stack"] < game_result["players"][1]["stack"]:
             win[i] += 1
         #print(game_result)
-    print(f"odd v.s. {player}: {win[i] / 10}")
+    print(f"odd v.s. {player}: {win[i] / 5}")
 
