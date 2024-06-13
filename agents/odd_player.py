@@ -55,48 +55,82 @@ class OddPlayer(
         print(f"win_rate: {win_rate}")
         #---------------
         
-        secret_key = 0.75
-        secret_key2 = 0.5
+        raise_amount = 0
+        call_amount = 0
 
         if len(round_state["community_card"]) == 0:
-            secret_key = 0.6
-            secret_key2 = 0.4
-
-        if win_rate >= secret_key:
-            # allin
-            if (valid_actions[2]["amount"]["min"] > 20):
-                action, amount = valid_actions[2]["action"], valid_actions[2]["amount"]["max"]
-            elif valid_actions[2]["amount"]["min"] > 0:
-                action, amount = valid_actions[2]["action"], 20
+            if win_rate >= 0.8:
+                raise_amount = 0
+                call_amount = 10000
+            elif win_rate >= 0.6:
+                raise_amount = 20
+                call_amount = 10000
+            elif win_rate >= 0.4:
+                raise_amount = 0
+                call_amount = 100
+            elif win_rate >= 0.2:
+                raise_amount = 20
+                call_amount = 30
             else:
-                action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
-        elif win_rate >= 0.6:
-            # raise 2BB or call 10BB
-            if valid_actions[2]["amount"]["min"] <= 20 and valid_actions[2]["amount"]["max"] > 0:
-                action, amount = valid_actions[2]["action"], 20
-            elif valid_actions[1]["amount"] <= 100:
+                raise_amount = 0
+                call_amount = 0
+        elif len(round_state["community_card"]) == 3:
+            if win_rate >= 0.8:
+                raise_amount = 40
+                call_amount = 10000
+            elif win_rate >= 0.6:
+                raise_amount = 20
+                call_amount = 10000
+            elif win_rate >= 0.4:
+                raise_amount = 0
+                call_amount = 0
+            elif win_rate >= 0.2:
+                raise_amount = 20
+                call_amount = 0
+            else:
+                raise_amount = 0
+                call_amount = 0
+        elif len(round_state["community_card"]) == 4:
+            if win_rate >= 0.8:
+                raise_amount = 100
+                call_amount = 10000
+            elif win_rate >= 0.6:
+                raise_amount = 50
+                call_amount = 10000
+            elif win_rate >= 0.4:
+                raise_amount = 0
+                call_amount = 50
+            elif win_rate >= 0.2:
+                raise_amount = 50
+                call_amount = 0
+            else:
+                raise_amount = 0
+                call_amount = 0
+        elif len(round_state["community_card"]) == 5:
+            if win_rate >= 0.8:
+                raise_amount = 80
+                call_amount = 10000
+            elif win_rate >= 0.6:
+                raise_amount = 40
+                call_amount = 10000
+            elif win_rate >= 0.4:
+                raise_amount = 0
+                call_amount = 40
+            elif win_rate >= 0.2:
+                raise_amount = 40
+                call_amount = 0
+            else:
+                raise_amount = 0
+                call_amount = 0
+        
+        if (valid_actions[2]["amount"]["min"] > raise_amount or valid_actions[2]["amount"]["min"] < 0):
+            if (valid_actions[1]["amount"] <= call_amount):
                 action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
             else:
                 action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
-        elif win_rate >= secret_key2:
-            # check
-            if valid_actions[1]["amount"] <= 50:
-                action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
-            else:
-                action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
-        # elif win_rate >= 0.2:
-        #     if valid_actions[2]["amount"]["min"] <= 20 and valid_actions[2]["amount"]["max"] > 0:
-        #         action, amount = valid_actions[2]["action"], 20
-        #     elif valid_actions[1]["amount"] <= 30:
-        #         action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
-        #     else:
-        #         action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
         else:
-            # fold or check
-            if valid_actions[1]["amount"] == 0:
-                action, amount = valid_actions[1]["action"], valid_actions[1]["amount"]
-            else:
-                action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
+            action, amount = valid_actions[2]["action"], min(raise_amount, valid_actions[2]["amount"]["max"]) 
+
         
         print(f"action: {action}")
         print(f"amount: {amount}")
@@ -110,7 +144,8 @@ class OddPlayer(
         self.win=False
 
     def receive_round_start_message(self, round_count, hole_card, seats):
-        self.win_line=1000 + 15 * ((20 - round_count) //2) + 10 * ((20 - round_count) % 2)
+        remain_count = 20 + 1 - round_count
+        self.win_line=1000 + 15 * ((remain_count) //2) + 10 * ((remain_count) % 2)
 
     def receive_street_start_message(self, street, round_state):
         pass

@@ -21,7 +21,7 @@ from agents.dqn_player import setup_ai as dqn_ai
 #config.register_player(name="me", algorithm=console_ai())
 
 players = [baseline7_ai(), baseline6_ai(), baseline5_ai(),baseline4_ai(), baseline3_ai(), baseline2_ai(), baseline1_ai()]
-win = [0, 0, 0, 0, 0, 0, 0, ]
+win = [0, 0, 0, 0, 0, 0, 0]
 
 for i, player in enumerate(players):
     for j in tqdm(range(5)):
@@ -34,4 +34,5 @@ for i, player in enumerate(players):
             win[i] += 1
         #print(game_result)
     print(f"odd v.s. {player}: {win[i] / 5}")
+print(win)
 
