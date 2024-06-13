@@ -60,48 +60,48 @@ class OddPlayer(
 
         if len(round_state["community_card"]) == 0:
             if win_rate >= 0.8:
-                raise_amount = 0
+                raise_amount = 20
                 call_amount = 10000
             elif win_rate >= 0.6:
                 raise_amount = 20
                 call_amount = 10000
             elif win_rate >= 0.4:
                 raise_amount = 0
-                call_amount = 100
+                call_amount = 40
             elif win_rate >= 0.2:
-                raise_amount = 20
-                call_amount = 30
+                raise_amount = 0
+                call_amount = 0
             else:
                 raise_amount = 0
                 call_amount = 0
         elif len(round_state["community_card"]) == 3:
             if win_rate >= 0.8:
-                raise_amount = 40
+                raise_amount = 20
                 call_amount = 10000
             elif win_rate >= 0.6:
                 raise_amount = 20
                 call_amount = 10000
             elif win_rate >= 0.4:
                 raise_amount = 0
-                call_amount = 0
+                call_amount = 40
             elif win_rate >= 0.2:
                 raise_amount = 20
-                call_amount = 0
+                call_amount = 40
             else:
                 raise_amount = 0
                 call_amount = 0
         elif len(round_state["community_card"]) == 4:
             if win_rate >= 0.8:
-                raise_amount = 100
+                raise_amount = 40
                 call_amount = 10000
             elif win_rate >= 0.6:
-                raise_amount = 50
+                raise_amount = 40
                 call_amount = 10000
             elif win_rate >= 0.4:
                 raise_amount = 0
-                call_amount = 50
+                call_amount = 40
             elif win_rate >= 0.2:
-                raise_amount = 50
+                raise_amount = 40
                 call_amount = 0
             else:
                 raise_amount = 0

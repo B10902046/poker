@@ -32,7 +32,9 @@ for i, player in enumerate(players):
         game_result = start_poker(config, verbose=1)
         if game_result["players"][0]["stack"] < game_result["players"][1]["stack"]:
             win[i] += 1
-        #print(game_result)
+        if (win[i] >= 3):
+            print(f"odd v.s. {player}: early win!!!")
+            break
     print(f"odd v.s. {player}: {win[i] / 5}")
 print(win)
 
