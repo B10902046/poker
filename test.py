@@ -3,7 +3,6 @@ from game.game import setup_config, start_poker
 
 import numpy as np
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 
 from baseline0 import setup_ai as baseline0_ai
 from baseline1 import setup_ai as baseline1_ai
