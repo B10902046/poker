@@ -10,7 +10,7 @@ config.register_player(name="my ai", algorithm=train_ai())
 
 ## Play in interactive mode if uncomment
 #config.register_player(name="me", algorithm=console_ai())
-for _ in range(5000):
+for _ in range(500):
     game_result = start_poker(config, verbose=1)
 
 print(json.dumps(game_result, indent=4))

@@ -21,11 +21,11 @@ from agents.dqn_player import setup_ai as dqn_ai
 ## Play in interactive mode if uncomment
 #config.register_player(name="me", algorithm=console_ai())
 
-players = [baseline0_ai(), baseline1_ai(), baseline2_ai(), baseline3_ai(), baseline4_ai(), baseline5_ai(), baseline6_ai(), baseline7_ai()]
-win = [0, 0, 0, 0, 0, 0, 0, 0]
+players = [baseline7_ai(), baseline6_ai(), baseline5_ai(),baseline4_ai(), baseline3_ai(), baseline2_ai(), baseline1_ai()]
+win = [0, 0, 0, 0, 0, 0, 0, ]
 
 for i, player in enumerate(players):
-    for j in tqdm(range(10)):
+    for j in tqdm(range(5)):
         player = players[i]
         config = setup_config(max_round=20, initial_stack=1000, small_blind_amount=5)
         config.register_player(name="p1", algorithm=player)
