@@ -22,8 +22,9 @@ class DQNPlayer(
 
     #  we define the logic to make an action through this method. (so this method would be the core of your AI)
     def declare_action(self, valid_actions, hole_card, round_state):
-        state_feature = round_state_to_features(valid_actions, hole_card, round_state, self.game_info)
-        
+        state_feature = round_state_to_features(hole_card, round_state, self.game_info)
+        state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid])
+        state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] != self.uuid])
         
         try:
             all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
@@ -50,7 +51,7 @@ class DQNPlayer(
             output = self.DQN(torch.Tensor(state_feature))
 
             # Log the output tensor values for debugging
-            #print(f"Output tensor values: {output}")
+            print(f"Output tensor values: {output}")
             # Create a subset of the tensor
             subset = output[valid_action_id]
             # Find the index of the maximum value within the subset
