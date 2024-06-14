@@ -28,7 +28,7 @@ for i, player in enumerate(players):
         player = players[i]
         config = setup_config(max_round=20, initial_stack=1000, small_blind_amount=5)
         config.register_player(name="p1", algorithm=player)
-        config.register_player(name="p2", algorithm=odd_ai())
+        config.register_player(name="p2", algorithm=dqn_ai())
         game_result = start_poker(config, verbose=1)
         if game_result["players"][0]["stack"] < game_result["players"][1]["stack"]:
             win[i] += 1

@@ -3,7 +3,6 @@ from game.game import setup_config, start_poker
 from agents.dqn_train import setup_ai as train_ai
 
 from baseline7 import setup_ai as baseline7_ai
-players = [baseline7_ai(), baseline6_ai(), baseline5_ai(),baseline4_ai()]
 
 config = setup_config(max_round=20, initial_stack=1000, small_blind_amount=5)
 config.register_player(name="ta", algorithm=baseline7_ai())
@@ -15,3 +14,4 @@ for _ in range(500):
     game_result = start_poker(config, verbose=1)
 
 print(json.dumps(game_result, indent=4))
+
