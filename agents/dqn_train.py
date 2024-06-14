@@ -123,7 +123,7 @@ class TrainPlayer(BasePokerPlayer):
             if self.step % self.target_update_freq == 0 and self.step >= self.learning_start_step:
                 self.target_DQN.load_state_dict(self.DQN.state_dict())
             if self.step % self.checkpoint_period == 0 and self.step >= self.learning_start_step:
-                torch.save(self.DQN.state_dict(), f"src/model/model_{self.step}.pth")
+                torch.save(self.DQN.state_dict(), f"src/model/model2_{self.step}.pth")
         except Exception as e:
             print(f"error in training process at step {self.step}: {e}")
 
