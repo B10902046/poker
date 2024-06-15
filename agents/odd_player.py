@@ -31,7 +31,6 @@ class OddPlayer(
     def declare_action(self, valid_actions, hole_card, round_state):
         # already win
         if self.win:
-            print("win!!!!!!!!!!!!!!")
             action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
             return action, amount
         # valid_actions format => [fold_action_info, call_action_info, raise_action_info]
@@ -138,10 +137,6 @@ class OddPlayer(
         return action, amount  # action returned here is sent to the poker engine
         
     def receive_game_start_message(self, game_info):
-        if game_info["seats"][0]["name"]=='me':
-            self.index=0
-        else:
-            self.index=1
         self.win=False
 
     def receive_round_start_message(self, round_count, hole_card, seats):
@@ -156,10 +151,8 @@ class OddPlayer(
 
     def receive_round_result_message(self, winners, hand_info, round_state):
         a = [s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid]
-        print(f"my money {a[0]}")
-        if round_state["seats"][self.index]["stack"] >= self.win_line:
+        if a[0] >= self.win_line:
             self.win = True
-            print("win!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         else:
             self.win=False
 
