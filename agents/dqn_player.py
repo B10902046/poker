@@ -16,7 +16,7 @@ class DQNPlayer(
     
     def __init__(self, num_actions = 8):
         self.DQN = DQN(num_actions=num_actions)
-        self.DQN.load_state_dict(torch.load("src/model/model2_5000.pth"))
+        self.DQN.load_state_dict(torch.load("src/model/model2_20000.pth"))
         self.DQN.eval()
         self.num_actions = num_actions
 
@@ -86,8 +86,7 @@ class DQNPlayer(
         self.win=False
 
     def receive_round_start_message(self, round_count, hole_card, seats):
-        remain_count = 20 + 1 - round_count
-        self.win_line=1000 + 15 * ((remain_count) //2) + 10 * ((remain_count) % 2)
+        self.win_line=1000 + 15 * ((20 - round_count) //2) + 10 * ((remain_count) % 2)
 
     def receive_street_start_message(self, street, round_state):
         pass

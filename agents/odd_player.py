@@ -154,8 +154,12 @@ class OddPlayer(
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
+        print(f"my money {round_state["seats"][self.index]["stack"]}")
         if round_state["seats"][self.index]["stack"] >= self.win_line:
             self.win = True
+            print("win!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        else:
+            self.win=False
 
 
 def setup_ai():
