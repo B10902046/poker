@@ -17,7 +17,7 @@ def init_weights(m):
 class TrainPlayer(BasePokerPlayer):
     def __init__(self, num_actions=8):
         # self.DQN = DQN(num_actions=num_actions)
-        # self.target_DQN = DQN(num_actions=num_actions)
+        self.target_DQN = DQN(num_actions=num_actions)
         # self.DQN.apply(init_weights)
         self.DQN = DQN(num_actions=num_actions)
         self.DQN.load_state_dict(torch.load("src/model/model2_29500.pth"))
