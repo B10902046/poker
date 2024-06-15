@@ -59,7 +59,7 @@ class DQNPlayer(
             output = self.DQN(torch.Tensor(state_feature))
 
             # Log the output tensor values for debugging
-            #print(f"Output tensor values: {output}")
+            print(f"Output tensor values: {output}")
             # Create a subset of the tensor
             subset = output[valid_action_id]
             # Find the index of the maximum value within the subset
