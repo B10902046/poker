@@ -46,7 +46,7 @@ class DQNPlayer(
             else:
                 valid_action_id.append(3)
             if (valid_actions[2]["amount"]["min"] > 0):
-                if (state_feature[2] >= 0.6 + len(round_state['community_card']) * 0.5):
+                if (state_feature[2] >= 0.6 + len(round_state['community_card']) * 0.4):
                     valid_action_id.append(7)
                 if (valid_actions[2]["amount"]["min"] <= 80):
                     valid_action_id.append(6)
