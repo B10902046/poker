@@ -12,8 +12,7 @@ from baseline5 import setup_ai as baseline5_ai
 from baseline6 import setup_ai as baseline6_ai
 from baseline7 import setup_ai as baseline7_ai
 
-from agents.odd_player import setup_ai as odd_ai
-from agents.dqn_player import setup_ai as dqn_ai
+from src.agent import setup_ai as agent_ai
 
 
 ## Play in interactive mode if uncomment
@@ -27,7 +26,7 @@ for i, player in enumerate(players):
         player = players[i]
         config = setup_config(max_round=20, initial_stack=1000, small_blind_amount=5)
         config.register_player(name="p1", algorithm=player)
-        config.register_player(name="p2", algorithm=dqn_ai())
+        config.register_player(name="p2", algorithm=agent_ai())
         game_result = start_poker(config, verbose=1)
         if game_result["players"][0]["stack"] < game_result["players"][1]["stack"]:
             win[i] += 1
