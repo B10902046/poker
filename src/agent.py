@@ -27,7 +27,7 @@ class DQNPlayer(
         
         state_feature = round_state_to_features(hole_card, round_state, self.game_info)
         state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid])
-        state_feature.extend(a = [s['stack'] for s in round_state['seats'] if s['uuid'] != self.uuid])
+        state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] != self.uuid])
 
         if len(state_feature) > 5:
             state_feature = state_feature[:5]
