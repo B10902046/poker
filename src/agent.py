@@ -23,6 +23,7 @@ class DQNPlayer(
     #  we define the logic to make an action through this method. (so this method would be the core of your AI)
     def declare_action(self, valid_actions, hole_card, round_state):
         if (self.win):
+            print("WINNNNNNNNNNNNNNNNN!!!!!!!!")
             return valid_actions[0]["action"], valid_actions[0]["amount"]
         
         state_feature = round_state_to_features(hole_card, round_state, self.game_info)
