@@ -27,7 +27,8 @@ class DQNPlayer(
         
         state_feature = round_state_to_features(hole_card, round_state, self.game_info)
         state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid])
-        state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] != self.uuid])
+        a = [s['stack'] for s in round_state['seats'] if s['uuid'] != self.uuid]
+        state_feature.extend(a[0])
         
         try:
             all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
@@ -55,7 +56,7 @@ class DQNPlayer(
             output = self.DQN(torch.Tensor(state_feature))
 
             # Log the output tensor values for debugging
-            print(f"Output tensor values: {output}")
+            #print(f"Output tensor values: {output}")
             # Create a subset of the tensor
             subset = output[valid_action_id]
             # Find the index of the maximum value within the subset
@@ -80,7 +81,9 @@ class DQNPlayer(
     def receive_game_start_message(self, game_info):
         self.game_info = game_info
         self.total_stack = game_info["player_num"]*game_info["rule"]["initial_stack"]
-        
+        self.has_win_line = True
+        if (game_info["player_num"] > 2):
+            self.has_win_line = False
         self.win=False
 
     def receive_round_start_message(self, round_count, hole_card, seats):
@@ -94,7 +97,7 @@ class DQNPlayer(
 
     def receive_round_result_message(self, winners, hand_info, round_state):
         a = [s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid]
-        if a[0] >= self.win_line:
+        if a[0] >= self.win_line and self.has_win_line:
             self.win = True
         else:
             self.win=False
