@@ -4,7 +4,6 @@ from game.game import setup_config, start_poker
 import numpy as np
 from tqdm import tqdm
 
-from baseline0 import setup_ai as baseline0_ai
 from baseline1 import setup_ai as baseline1_ai
 from baseline2 import setup_ai as baseline2_ai
 from baseline3 import setup_ai as baseline3_ai
@@ -24,7 +23,7 @@ players = [baseline7_ai(), baseline6_ai(), baseline5_ai(),baseline4_ai(), baseli
 win = [0, 0, 0, 0, 0, 0, 0]
 
 for i, player in enumerate(players):
-    for j in tqdm(range(5)):
+    for j in tqdm(range(10)):
         player = players[i]
         config = setup_config(max_round=20, initial_stack=1000, small_blind_amount=5)
         config.register_player(name="p1", algorithm=player)
@@ -32,9 +31,6 @@ for i, player in enumerate(players):
         game_result = start_poker(config, verbose=1)
         if game_result["players"][0]["stack"] < game_result["players"][1]["stack"]:
             win[i] += 1
-        if (win[i] >= 3):
-            print(f"odd v.s. {player}: early win!!!")
-            break
-    print(f"odd v.s. {player}: {win[i] / 5}")
+    print(f"odd v.s. {player}: {win[i] / 10}")
 print(win)
 
