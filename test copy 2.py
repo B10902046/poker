@@ -21,7 +21,7 @@ from agents.dqn_player import setup_ai as dqn_ai
 
 players = [baseline7_ai(), baseline6_ai(), baseline5_ai(),baseline4_ai(), baseline3_ai(), baseline2_ai(), baseline1_ai()]
 win = [0, 0, 0, 0, 0, 0, 0]
-
+stake = [0, 0, 0, 0, 0, 0, 0]
 for i, player in enumerate(players):
     for j in tqdm(range(10)):
         player = players[i]
@@ -31,6 +31,8 @@ for i, player in enumerate(players):
         game_result = start_poker(config, verbose=1)
         if game_result["players"][0]["stack"] < game_result["players"][1]["stack"]:
             win[i] += 1
+        stake[i] += game_result["players"][1]["stack"]
     print(f"odd v.s. {player}: {win[i] / 10}")
 print(win)
+print(stake)
 
