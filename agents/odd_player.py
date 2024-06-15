@@ -31,6 +31,7 @@ class OddPlayer(
     def declare_action(self, valid_actions, hole_card, round_state):
         # already win
         if self.win:
+            print("win!!!!!!!!!!!!!!")
             action, amount = valid_actions[0]["action"], valid_actions[0]["amount"]
             return action, amount
         # valid_actions format => [fold_action_info, call_action_info, raise_action_info]
@@ -154,7 +155,8 @@ class OddPlayer(
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
-        print(f"my money {[s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid]}")
+        a = [s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid]
+        print(f"my money {a[0]}")
         if round_state["seats"][self.index]["stack"] >= self.win_line:
             self.win = True
             print("win!!!!!!!!!!!!!!!!!!!!!!!!!!!")
