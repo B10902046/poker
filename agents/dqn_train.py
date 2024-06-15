@@ -16,9 +16,14 @@ def init_weights(m):
 
 class TrainPlayer(BasePokerPlayer):
     def __init__(self, num_actions=8):
+        # self.DQN = DQN(num_actions=num_actions)
+        # self.target_DQN = DQN(num_actions=num_actions)
+        # self.DQN.apply(init_weights)
         self.DQN = DQN(num_actions=num_actions)
-        self.target_DQN = DQN(num_actions=num_actions)
-        self.DQN.apply(init_weights)
+        self.DQN.load_state_dict(torch.load("src/model/model2_29500.pth"))
+        self.DQN.train()
+        self.num_actions = num_actions
+
         self.target_DQN.load_state_dict(self.DQN.state_dict())
         for p in self.target_DQN.parameters():
             p.requires_grad = False
@@ -123,7 +128,7 @@ class TrainPlayer(BasePokerPlayer):
             if self.step % self.target_update_freq == 0 and self.step >= self.learning_start_step:
                 self.target_DQN.load_state_dict(self.DQN.state_dict())
             if self.step % self.checkpoint_period == 0 and self.step >= self.learning_start_step:
-                torch.save(self.DQN.state_dict(), f"src/model/model2_{self.step}.pth")
+                torch.save(self.DQN.state_dict(), f"src/model/model3_{self.step}.pth")
         except Exception as e:
             print(f"error in training process at step {self.step}: {e}")
 
