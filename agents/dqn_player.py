@@ -79,15 +79,12 @@ class DQNPlayer(
     def receive_game_start_message(self, game_info):
         self.game_info = game_info
         self.total_stack = game_info["player_num"]*game_info["rule"]["initial_stack"]
-        if game_info["seats"][0]["name"]=='me':
-            self.index=0
-        else:
-            self.index=1
+        
         self.win=False
 
     def receive_round_start_message(self, round_count, hole_card, seats):
-        self.win_line=1000 + 15 * ((20 - round_count) //2) + 10 * ((remain_count) % 2)
-
+        remain_count = 20 + 1 - round_count
+        self.win_line=1000 + 15 * ((remain_count) //2) + 10 * ((remain_count) % 2)
     def receive_street_start_message(self, street, round_state):
         pass
 
@@ -95,9 +92,9 @@ class DQNPlayer(
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
-        money=round_state["seats"][self.index]["stack"]
-        if money>self.win_line:
-            self.win=True
+        a = [s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid]
+        if a[0] >= self.win_line:
+            self.win = True
         else:
             self.win=False
 
