@@ -154,7 +154,7 @@ class OddPlayer(
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
-        print(f"my money {round_state["seats"][self.index]["stack"]}")
+        print(f"my money {[s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid]}")
         if round_state["seats"][self.index]["stack"] >= self.win_line:
             self.win = True
             print("win!!!!!!!!!!!!!!!!!!!!!!!!!!!")
