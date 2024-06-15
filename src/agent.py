@@ -16,7 +16,7 @@ class DQNPlayer(
     
     def __init__(self, num_actions = 8):
         self.DQN = DQN(num_actions=num_actions)
-        self.DQN.load_state_dict(torch.load("model3.pth"))
+        self.DQN.load_state_dict(torch.load("src/model3.pth"))
         self.DQN.eval()
         self.num_actions = num_actions
 
