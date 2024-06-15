@@ -75,6 +75,9 @@ class DQNPlayer(
             else:
                 amount = all_actions[action_id][1]
             action = all_actions[action_id][0]
+            
+            if (action_id == 0 and valid_actions[1]["amount"] == 0):
+                action = valid_actions[1]["action"]
 
             return action, amount  # action returned here is sent to the poker engine
         except:
