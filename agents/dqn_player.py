@@ -22,6 +22,9 @@ class DQNPlayer(
 
     #  we define the logic to make an action through this method. (so this method would be the core of your AI)
     def declare_action(self, valid_actions, hole_card, round_state):
+        if (self.win):
+            return valid_actions[0]["action"], valid_actions[0]["amount"]
+        
         state_feature = round_state_to_features(hole_card, round_state, self.game_info)
         state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid])
         state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] != self.uuid])
@@ -76,9 +79,15 @@ class DQNPlayer(
     def receive_game_start_message(self, game_info):
         self.game_info = game_info
         self.total_stack = game_info["player_num"]*game_info["rule"]["initial_stack"]
+        if game_info["seats"][0]["name"]=='me':
+            self.index=0
+        else:
+            self.index=1
+        self.win=False
 
     def receive_round_start_message(self, round_count, hole_card, seats):
-        pass
+        remain_count = 20 + 1 - round_count
+        self.win_line=1000 + 15 * ((remain_count) //2) + 10 * ((remain_count) % 2)
 
     def receive_street_start_message(self, street, round_state):
         pass
@@ -87,7 +96,11 @@ class DQNPlayer(
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
-        pass
+        money=round_state["seats"][self.index]["stack"]
+        if money>self.win_line:
+            self.win=True
+        else:
+            self.win=False
 
 def setup_ai():
     return DQNPlayer()
