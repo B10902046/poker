@@ -28,6 +28,9 @@ class DQNPlayer(
         state_feature = round_state_to_features(hole_card, round_state, self.game_info)
         state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] == self.uuid])
         state_feature.extend([s['stack'] for s in round_state['seats'] if s['uuid'] != self.uuid])
+
+        if len(state_feature) > 5:
+            state_feature = state_feature[:5]
         
         try:
             all_actions = [[valid_actions[0]["action"], valid_actions[0]["amount"]], [valid_actions[1]["action"], 50], [valid_actions[1]["action"], 100], [valid_actions[1]["action"], 150], [valid_actions[2]["action"], 20], [valid_actions[2]["action"], 40], [valid_actions[2]["action"], 80], [valid_actions[2]["action"], valid_actions[2]["amount"]["max"]]]
