@@ -1,14 +1,14 @@
 from game.players import BasePokerPlayer
 from game.engine.card import Card
 from game.engine.hand_evaluator import HandEvaluator
-from src.DQN_model import DQN
-from src.utils import round_state_to_features
+from .DQN_model import DQN
+from .utils import round_state_to_features
 import random
 import torch.nn as nn
 import torch.optim as optim
 import torch
-from src.compute_odd import *
-from agents.odd_player import *
+from .compute_odd import *
+#from agents.odd_player import *
 
 class DQNPlayer(
     BasePokerPlayer
