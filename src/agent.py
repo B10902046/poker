@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch
 from .compute_odd import *
+import os
 #from agents.odd_player import *
 
 class DQNPlayer(
@@ -16,7 +17,11 @@ class DQNPlayer(
     
     def __init__(self, num_actions = 8):
         self.DQN = DQN(num_actions=num_actions)
-        self.DQN.load_state_dict(torch.load("src/model3.pth"))
+        # Get the current directory
+        current_dir = os.path.dirname(__file__)
+        # Construct the path to the model file
+        model_path = os.path.join(current_dir, "model3.pth")
+        self.DQN.load_state_dict(torch.load(model_path))
         self.DQN.eval()
         self.num_actions = num_actions
 
